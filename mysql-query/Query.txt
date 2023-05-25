@@ -1,0 +1,38 @@
+1.Query Indexing dalam tabel
+
+CREATE INDEX index_user ON users (name);
+CREATE INDEX index_hobbi ON hobbies (name);
+CREATE INDEX index_map ON map_user_hobby (id);
+
+2. query untuk menghitung jumlah user masing masing gender pada suatu hobby tertentu
+
+SELECT u.gender, COUNT(*) AS total
+FROM users u
+JOIN map_user_hobby m ON u.id = m.user_id
+JOIN hobbies h ON m.hobby_id = h.id
+WHERE h.name = 'Skipping'
+GROUP BY u.gender;
+
+3.Buat query untuk menghitung jumlah hobby dari setiap user yang masih aktif
+
+SELECT u.name AS name_user, COUNT(*) AS total
+FROM users u
+JOIN map_user_hobby m ON u.id = m.user_id
+WHERE u.status = 'active'
+GROUP BY u.name;
+
+
+4.Hitung level rata - rata tiap user dari hobi yang dimiliki, ketika user memiliki hobi lebih dari 1
+
+SELECT u.name, AVG(h.level) AS level_avg
+FROM users u
+JOIN map_user_hobby m ON u.id = m.user_id
+JOIN hobbies h ON m.hobby_id = h.id
+WHERE u.id IN (
+    SELECT user_id
+    FROM map_user_hobby
+    GROUP BY user_id
+    HAVING COUNT(*) > 1
+)
+GROUP BY u.name;
+
